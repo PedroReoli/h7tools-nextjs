@@ -36,10 +36,10 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ statistics }) => {
             <div className="grid grid-cols-3 gap-6 pt-8">
               {statistics.map((stat, index) => (
                 <div key={index} className="text-center">
-                  <Text variant="h2" color="secondary" className="mb-2">
+                  <Text variant="h2" className="mb-2 text-white font-bold">
                     {stat.value}
                   </Text>
-                  <Text variant="caption" className="text-gray-400">
+                  <Text variant="caption" className="text-white/80">
                     {stat.label}
                   </Text>
                 </div>

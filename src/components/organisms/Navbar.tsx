@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Text, Button } from '@/components/atoms';
-import { useScrollPosition } from '@/hooks/useScrollPosition';
 import { cn } from '@/utils/cn';
 import { Menu, X, ShoppingCart } from 'lucide-react';
 
@@ -10,119 +9,250 @@ const navLinks = [
   { label: 'Início', href: '#home' },
   { label: 'Produtos', href: '#produtos' },
   { label: 'Sobre', href: '#sobre' },
+  { label: 'FAQ', href: '#conhecimento' },
   { label: 'Contato', href: '#contato' },
 ];
 
 export const Navbar: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const scrollPosition = useScrollPosition();
-  const isScrolled = scrollPosition > 50;
+  const [showFixedNavbar, setShowFixedNavbar] = useState(false);
+  const [isTransparentMenuOpen, setIsTransparentMenuOpen] = useState(false);
+  const [isFixedMenuOpen, setIsFixedMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // Detectar quando sair da hero section
+    const heroSection = document.querySelector('.h7tools-hero');
+    
+    if (!heroSection) return;
+
+    // Intersection Observer - detecta quando a hero sai da viewport
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          // Se a hero NÃO está visível = mostra navbar fixed
+          setShowFixedNavbar(!entry.isIntersecting);
+        });
+      },
+      {
+        threshold: 0,
+        rootMargin: '0px'
+      }
+    );
+
+    observer.observe(heroSection);
+
+    // Cleanup
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
 
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
-      setIsMenuOpen(false);
+      setIsTransparentMenuOpen(false);
+      setIsFixedMenuOpen(false);
     }
   };
 
   return (
-    <nav
-      className={cn(
-        'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        isScrolled
-          ? 'bg-white shadow-lg'
-          : 'bg-transparent'
-      )}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16 md:h-20">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Text
-              variant="h5"
-              color={isScrolled ? 'primary' : 'white'}
-              className="font-bold"
-            >
+    <>
+      {/* NAVBAR 1 - TRANSPARENTE (Acompanha scroll até sair da hero) */}
+      <nav className="fixed top-0 left-0 right-0 z-[9998] transition-opacity duration-500"
+        style={{
+          opacity: !showFixedNavbar ? 1 : 0,
+          pointerEvents: !showFixedNavbar ? 'auto' : 'none'
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <Text variant="h5" color="white" className="font-bold z-[9999]">
               H7<span className="text-secondary">TOOLS</span>
             </Text>
-          </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <button
-                key={link.href}
-                onClick={() => scrollToSection(link.href)}
-                className={cn(
-                  'font-medium transition-colors duration-300',
-                  isScrolled
-                    ? 'text-primary hover:text-secondary'
-                    : 'text-white hover:text-secondary'
-                )}
-              >
-                {link.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Cart Button */}
-          <div className="hidden md:flex items-center gap-4">
-            <button className={cn(
-              'relative p-2 transition-colors',
-              isScrolled ? 'text-primary hover:text-secondary' : 'text-white hover:text-secondary'
-            )}>
-              <ShoppingCart size={24} />
-              <span className="absolute -top-1 -right-1 bg-secondary text-primary text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
-            </button>
-            <Button variant={isScrolled ? 'primary' : 'secondary'}>
-              Login
-            </Button>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            className={cn(
-              'md:hidden p-2',
-              isScrolled ? 'text-primary' : 'text-white'
-            )}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden bg-white border-t animate-fade-in">
-            <div className="px-2 pt-2 pb-3 space-y-1">
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
               {navLinks.map((link) => (
                 <button
                   key={link.href}
                   onClick={() => scrollToSection(link.href)}
-                  className="block w-full text-left px-3 py-2 text-primary hover:text-secondary hover:bg-gray-50 rounded-md"
+                  className="font-medium text-white hover:text-secondary transition-colors duration-300"
                 >
                   {link.label}
                 </button>
               ))}
-              <div className="pt-4 space-y-2">
-                <button className="w-full flex items-center justify-between px-3 py-2 text-primary hover:bg-gray-50 rounded-md">
-                  <span>Carrinho</span>
-                  <span className="bg-secondary text-primary text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
-                    0
-                  </span>
+            </div>
+
+            {/* Desktop Buttons */}
+            <div className="hidden md:flex items-center gap-4">
+              <button className="relative p-2 text-white hover:text-secondary transition-colors">
+                <ShoppingCart size={24} />
+                <span className="absolute -top-1 -right-1 bg-secondary text-primary text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  0
+                </span>
+              </button>
+              <button
+                className="px-6 py-3 font-bold rounded-full hover:scale-105 transition-all"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.4)',
+                  backdropFilter: 'blur(8px)'
+                }}
+              >
+                Login
+              </button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsTransparentMenuOpen(!isTransparentMenuOpen)}
+              className="md:hidden z-[9999] p-2"
+              aria-label="Menu"
+            >
+              {isTransparentMenuOpen ? (
+                <X size={28} color="#ffffff" />
+              ) : (
+                <Menu size={28} color="#ffffff" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isTransparentMenuOpen && (
+          <div
+            className="md:hidden absolute top-20 left-0 right-0 z-[9999]"
+            style={{
+              backgroundColor: 'rgba(0, 0, 0, 0.95)',
+              backdropFilter: 'blur(12px)',
+              borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+            }}
+          >
+            <div className="flex flex-col p-4 gap-3">
+              {navLinks.map((link) => (
+                <button
+                  key={link.href}
+                  onClick={() => scrollToSection(link.href)}
+                  className="px-6 py-3 font-medium rounded-full text-center text-white hover:bg-white/10 transition-all"
+                >
+                  {link.label}
                 </button>
-                <Button variant="primary" fullWidth>
-                  Login
-                </Button>
-              </div>
+              ))}
+              <button className="w-full flex items-center justify-between px-6 py-3 text-white hover:bg-white/10 rounded-full">
+                <span>Carrinho</span>
+                <span className="bg-secondary text-primary text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                  0
+                </span>
+              </button>
+              <button
+                className="px-6 py-3 font-bold rounded-full text-center hover:scale-105 transition-all"
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.4)'
+                }}
+              >
+                Login
+              </button>
             </div>
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+
+      {/* NAVBAR 2 - FIXED BRANCA (Aparece após Hero) */}
+      <nav
+        className="fixed top-0 left-0 right-0 z-[9998] transition-opacity duration-500"
+        style={{
+          opacity: showFixedNavbar ? 1 : 0,
+          pointerEvents: showFixedNavbar ? 'auto' : 'none',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          backdropFilter: 'blur(12px)',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            {/* Logo */}
+            <Text variant="h5" color="primary" className="font-bold z-[9999]">
+              H7<span className="text-secondary">TOOLS</span>
+            </Text>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              {navLinks.map((link) => (
+                <button
+                  key={link.href}
+                  onClick={() => scrollToSection(link.href)}
+                  className="font-medium text-primary hover:text-secondary transition-colors duration-300"
+                >
+                  {link.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Desktop Buttons */}
+            <div className="hidden md:flex items-center gap-4">
+              <button className="relative p-2 text-primary hover:text-secondary transition-colors">
+                <ShoppingCart size={24} />
+                <span className="absolute -top-1 -right-1 bg-secondary text-primary text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                  0
+                </span>
+              </button>
+              <Button variant="primary">Login</Button>
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsFixedMenuOpen(!isFixedMenuOpen)}
+              className="md:hidden z-[9999] p-2"
+              aria-label="Menu"
+            >
+              {isFixedMenuOpen ? (
+                <X size={28} color="#374151" />
+              ) : (
+                <Menu size={28} color="#374151" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isFixedMenuOpen && (
+          <div
+            className="md:hidden absolute top-20 left-0 right-0 z-[9999]"
+            style={{
+              backgroundColor: 'rgba(255, 255, 255, 0.98)',
+              backdropFilter: 'blur(12px)',
+              borderTop: '1px solid rgba(0, 0, 0, 0.1)',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+            }}
+          >
+            <div className="flex flex-col p-4 gap-3">
+              {navLinks.map((link) => (
+                <button
+                  key={link.href}
+                  onClick={() => scrollToSection(link.href)}
+                  className="px-6 py-3 font-medium rounded-full text-center text-primary hover:bg-gray-100 transition-all"
+                >
+                  {link.label}
+                </button>
+              ))}
+              <button className="w-full flex items-center justify-between px-6 py-3 text-primary hover:bg-gray-100 rounded-full">
+                <span>Carrinho</span>
+                <span className="bg-secondary text-primary text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+                  0
+                </span>
+              </button>
+              <Button variant="primary" fullWidth>
+                Login
+              </Button>
+            </div>
+          </div>
+        )}
+      </nav>
+    </>
   );
 };
 

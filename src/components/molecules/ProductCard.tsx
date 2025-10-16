@@ -20,12 +20,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 }) => {
   return (
     <Card variant="elevated" className="group">
-      <div className="relative h-64 overflow-hidden">
+      <div className="relative h-64 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200">
         <Image
           src={product.image}
           alt={product.name}
           fill
-          className="object-cover group-hover:scale-110 transition-transform duration-300"
+          className="object-cover group-hover:scale-110 transition-transform duration-300 mix-blend-multiply"
         />
         {product.discount && (
           <div className="absolute top-3 right-3">

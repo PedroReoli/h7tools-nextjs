@@ -6,6 +6,7 @@ import {
   HeroSection,
   ProductGrid,
   AboutSection,
+  KnowledgeBaseSection,
   Footer,
 } from '@/components/organisms';
 import { Product, Statistic } from '@/types';
@@ -35,13 +36,14 @@ export const LandingPageTemplate: React.FC<LandingPageTemplateProps> = ({
     <div className="min-h-screen">
       <Navbar />
       <main>
-        <HeroSection products={heroProducts} onBuy={handleBuy} />
+        <HeroSection />
         <ProductGrid
           products={gridProducts}
           onBuy={handleBuy}
           onView={handleView}
         />
         <AboutSection statistics={statistics} />
+        <KnowledgeBaseSection />
       </main>
       <Footer />
     </div>
