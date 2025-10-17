@@ -8,29 +8,8 @@ export const HeroSection: React.FC = () => {
   return (
     <section
       id="home"
-      className="h7tools-hero relative flex items-center justify-center overflow-hidden min-h-screen pt-20"
+      className="h7tools-hero relative flex items-center justify-center overflow-hidden min-h-screen pt-20 bg-background-dark"
     >
-      {/* Imagem de Fundo com Animação */}
-      <motion.div
-        className="absolute inset-0"
-        initial={{ filter: 'blur(0px) brightness(1)' }}
-        animate={{
-          filter: 'blur(25px) brightness(0.4)',
-        }}
-        transition={{
-          duration: 2.5,
-          delay: 0.5,
-          ease: [0.43, 0.13, 0.23, 0.96],
-        }}
-      >
-        <img
-          src="/images/hero/logo.png"
-          alt="Fundo"
-          className="w-full h-full object-cover object-center"
-        />
-      </motion.div>
-      {/* Overlay escuro FIXO (não anima) */}
-      <div className="absolute inset-0 bg-black/70 pointer-events-none" />
 
       {/* Layout: Texto à Esquerda + Imagem à Direita */}
       <div className="relative z-40 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
@@ -74,6 +53,9 @@ export const HeroSection: React.FC = () => {
             >
               <button
                 onClick={() => {
+                  // Força ativação da navbar
+                  window.dispatchEvent(new Event('forceNavbarActive'));
+                  // Scroll suave para produtos
                   const produtosSection = document.querySelector('#produtos');
                   produtosSection?.scrollIntoView({ behavior: 'smooth' });
                 }}
@@ -113,10 +95,10 @@ export const HeroSection: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 1.2 }}
           >
-            <div className="relative w-full max-w-md lg:max-w-lg">
+            <div className="relative w-full max-w-xl lg:max-w-2xl">
               {/* Logo H7TOOLS */}
               <img
-                src="/images/hero/logo.png"
+                src="/images/hero/logo.svg"
                 alt="H7TOOLS - Ferramentas Profissionais"
                 className="relative w-full h-auto object-contain"
               />

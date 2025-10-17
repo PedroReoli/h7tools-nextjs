@@ -10,6 +10,11 @@ export const metadata: Metadata = {
   keywords: 'ferramentas, profissional, h7tools, equipamentos, construção',
   authors: [{ name: 'H7TOOLS' }],
   viewport: 'width=device-width, initial-scale=1',
+  icons: {
+    icon: '/images/favicon.ico',
+    shortcut: '/images/favicon.ico',
+    apple: '/images/favicon.ico',
+  },
 };
 
 export default function RootLayout({

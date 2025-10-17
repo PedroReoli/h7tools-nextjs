@@ -34,15 +34,23 @@ export const Navbar: React.FC = () => {
       },
       {
         threshold: 0,
-        rootMargin: '0px'
+        rootMargin: '-150px' // Detecta 150px antes da hero sair
       }
     );
 
     observer.observe(heroSection);
 
+    // Listener para forçar ativação ao clicar em "Ver Produtos"
+    const handleForceNavbar = () => {
+      setShowFixedNavbar(true);
+    };
+
+    window.addEventListener('forceNavbarActive', handleForceNavbar);
+
     // Cleanup
     return () => {
       observer.disconnect();
+      window.removeEventListener('forceNavbarActive', handleForceNavbar);
     };
   }, []);
 
@@ -67,9 +75,11 @@ export const Navbar: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
-            <Text variant="h5" color="white" className="font-bold z-[9999]">
-              H7<span className="text-secondary">TOOLS</span>
-            </Text>
+            <img 
+              src="/images/logo-cinza.png" 
+              alt="H7TOOLS" 
+              className="h-20 w-auto z-[9999]"
+            />
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
@@ -175,9 +185,11 @@ export const Navbar: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
             {/* Logo */}
-            <Text variant="h5" color="primary" className="font-bold z-[9999]">
-              H7<span className="text-secondary">TOOLS</span>
-            </Text>
+            <img 
+              src="/images/logo-branca.png" 
+              alt="H7TOOLS" 
+              className="h-20 w-auto z-[9999]"
+            />
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">

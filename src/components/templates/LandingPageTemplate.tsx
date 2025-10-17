@@ -4,6 +4,7 @@ import React from 'react';
 import {
   Navbar,
   HeroSection,
+  ProductCarouselSection,
   ProductGrid,
   AboutSection,
   KnowledgeBaseSection,
@@ -37,6 +38,7 @@ export const LandingPageTemplate: React.FC<LandingPageTemplateProps> = ({
       <Navbar />
       <main>
         <HeroSection />
+        <ProductCarouselSection />
         <ProductGrid
           products={gridProducts}
           onBuy={handleBuy}
