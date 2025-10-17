@@ -3,13 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import { Text, Button } from '@/components/atoms';
 import { cn } from '@/utils/cn';
-import { Menu, X, ShoppingCart } from 'lucide-react';
+import { Menu, X, ShoppingCart, User } from 'lucide-react';
 
 const navLinks = [
   { label: 'Início', href: '#home' },
+  { label: 'Destaques', href: '#destaques' },
   { label: 'Produtos', href: '#produtos' },
   { label: 'Sobre', href: '#sobre' },
-  { label: 'FAQ', href: '#conhecimento' },
   { label: 'Contato', href: '#contato' },
 ];
 
@@ -102,17 +102,18 @@ export const Navbar: React.FC = () => {
                   0
                 </span>
               </button>
-              <button
-                className="px-6 py-3 font-bold rounded-full hover:scale-105 transition-all"
+              <a
+                href="/login"
+                className="p-3 rounded-full hover:scale-105 transition-all flex items-center justify-center"
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                  color: '#ffffff',
                   border: '1px solid rgba(255, 255, 255, 0.4)',
                   backdropFilter: 'blur(8px)'
                 }}
+                aria-label="Login"
               >
-                Login
-              </button>
+                <User size={20} color="#ffffff" />
+              </a>
             </div>
 
             {/* Mobile Menu Button */}
@@ -156,16 +157,18 @@ export const Navbar: React.FC = () => {
                   0
                 </span>
               </button>
-              <button
-                className="px-6 py-3 font-bold rounded-full text-center hover:scale-105 transition-all"
+              <a
+                href="/login"
+                className="px-6 py-3 font-bold rounded-full text-center hover:scale-105 transition-all flex items-center justify-center gap-2"
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
                   border: '1px solid rgba(255, 255, 255, 0.4)'
                 }}
               >
-                Login
-              </button>
+                <User size={18} />
+                <span>Login</span>
+              </a>
             </div>
           </div>
         )}
@@ -212,7 +215,13 @@ export const Navbar: React.FC = () => {
                   0
                 </span>
               </button>
-              <Button variant="primary">Login</Button>
+              <a
+                href="/login"
+                className="p-3 bg-secondary text-primary rounded-full hover:scale-105 transition-all flex items-center justify-center shadow-md hover:shadow-lg"
+                aria-label="Login"
+              >
+                <User size={20} />
+              </a>
             </div>
 
             {/* Mobile Menu Button */}
@@ -257,9 +266,13 @@ export const Navbar: React.FC = () => {
                   0
                 </span>
               </button>
-              <Button variant="primary" fullWidth>
-                Login
-              </Button>
+              <a
+                href="/login"
+                className="w-full px-6 py-3 font-bold rounded-full text-center transition-all flex items-center justify-center gap-2 bg-secondary text-primary hover:scale-105 shadow-md"
+              >
+                <User size={18} />
+                <span>Login</span>
+              </a>
             </div>
           </div>
         )}

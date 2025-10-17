@@ -9,6 +9,8 @@ export interface Product {
   rating: number;
   reviews: number;
   category?: string;
+  features?: string[];
+  inStock?: boolean;
 }
 
 export interface NavLink {

@@ -7,7 +7,7 @@ import {
   ProductCarouselSection,
   ProductGrid,
   AboutSection,
-  KnowledgeBaseSection,
+  ContactSection,
   Footer,
 } from '@/components/organisms';
 import { Product, Statistic } from '@/types';
@@ -45,7 +45,7 @@ export const LandingPageTemplate: React.FC<LandingPageTemplateProps> = ({
           onView={handleView}
         />
         <AboutSection statistics={statistics} />
-        <KnowledgeBaseSection />
+        <ContactSection />
       </main>
       <Footer />
     </div>

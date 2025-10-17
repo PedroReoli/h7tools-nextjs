@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart, Heart } from 'lucide-react';
 import { Button } from '@/components/atoms';
 
 interface CarouselProduct {
@@ -27,8 +27,8 @@ const carouselProducts: CarouselProduct[] = [
     title: 'PARAFUSADEIRA',
     subtitle: 'Produtos em Destaque',
     price: 'R$ 1.299,99',
-    image: '/images/products/parafusadeira.png',
-    backgroundImage: '/images/products/parafusadeira-bg.jpg',
+    image: '/images/products/compressor.png',
+    backgroundImage: '/images/products/compressor.png',
     target: 'img1',
     options: [
       {
@@ -49,7 +49,7 @@ const carouselProducts: CarouselProduct[] = [
     subtitle: 'Oferta Especial',
     price: 'R$ 140,00',
     image: '/images/products/compressor.png',
-    backgroundImage: '/images/products/compressor-bg.jpg',
+    backgroundImage: '/images/products/compressor.png',
     target: 'img2',
     options: [
       {
@@ -67,8 +67,8 @@ const carouselProducts: CarouselProduct[] = [
     title: 'FURAÇÃO',
     subtitle: 'Ferramentas Profissionais',
     price: 'R$ 1.699,99',
-    image: '/images/products/furacao.png',
-    backgroundImage: '/images/products/furacao-bg.jpg',
+    image: '/images/products/compressor.png',
+    backgroundImage: '/images/products/compressor.png',
     target: 'img3',
     options: [
       {
@@ -95,8 +95,8 @@ const carouselProducts: CarouselProduct[] = [
     title: 'FERRAMENTA ELÉTRICA',
     subtitle: 'Qualidade Premium',
     price: 'R$ 9.999,99',
-    image: '/images/products/ferramenta.png',
-    backgroundImage: '/images/products/ferramenta-bg.jpg',
+    image: '/images/products/compressor.png',
+    backgroundImage: '/images/products/compressor.png',
     target: 'img4',
     options: [
       {
@@ -122,14 +122,31 @@ export const ProductCarouselSection: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: string }>({});
   const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
-
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + carouselProducts.length) % carouselProducts.length);
-  };
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % carouselProducts.length);
   };
+
+  // Auto-play functionality
+  useEffect(() => {
+    const startAutoPlay = () => {
+      intervalRef.current = setInterval(() => {
+        nextSlide();
+      }, 5000); // Muda slide a cada 5 segundos
+    };
+
+    const stopAutoPlay = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
+
+    startAutoPlay();
+
+    return () => stopAutoPlay();
+  }, []);
 
   const toggleFavorite = (productId: string) => {
     setFavorites((prev) => ({
@@ -155,14 +172,29 @@ export const ProductCarouselSection: React.FC = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
             Produtos em <span className="text-secondary">Destaque</span>
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto mb-8">
             Descubra nossas ferramentas profissionais com a melhor qualidade e preços competitivos
           </p>
+          
+          {/* Dots indicadores */}
+          <div className="flex justify-center gap-2 mb-8">
+            {carouselProducts.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentSlide 
+                    ? 'bg-secondary scale-125' 
+                    : 'bg-gray-300 hover:bg-secondary'
+                }`}
+              />
+            ))}
+          </div>
         </div>
         
-        <div className="relative h-[600px] max-w-6xl mx-auto">
+        <div className="relative md:h-[600px] max-w-6xl mx-auto">
           
-          {/* Background Shape */}
+          {/* Background Shape Desktop */}
           <div className="absolute left-0 top-0 h-full w-[50%] bg-gradient-to-br from-secondary to-secondary-dark rounded-3xl shadow-2xl items-center hidden md:flex">
             <div className="absolute left-4 top-1/2 transform -translate-y-1/2 opacity-20">
               <img 
@@ -192,59 +224,84 @@ export const ProductCarouselSection: React.FC = () => {
             ))}
           </div>
 
-          {/* Botões de Navegação */}
-          <button
-            onClick={prevSlide}
-            className="absolute left-[-15%] top-1/2 transform -translate-y-1/2 z-30 w-16 h-16 rounded-full items-center justify-center transition-all duration-300 border-2 hidden md:flex bg-white text-primary border-primary hover:bg-primary hover:text-white hover:border-primary shadow-xl hover:shadow-2xl"
-          >
-            <ChevronLeft size={24} />
-          </button>
 
-          <button
-            onClick={nextSlide}
-            className="absolute right-0 top-1/2 transform translate-x-1/2 -translate-y-1/2 z-30 w-16 h-16 rounded-full items-center justify-center transition-all duration-300 border-2 hidden md:flex bg-white text-primary border-primary hover:bg-primary hover:text-white hover:border-primary shadow-xl hover:shadow-2xl"
-          >
-            <ChevronRight size={24} />
-          </button>
 
-          {/* Botões Mobile e Dots */}
-          <div className="md:hidden flex flex-col items-center gap-4 mt-8">
-            {/* Dots indicadores */}
-            <div className="flex gap-2">
-              {carouselProducts.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    index === currentSlide 
-                      ? 'bg-secondary scale-125' 
-                      : 'bg-gray-300 hover:bg-gray-400'
-                  }`}
-                />
-              ))}
-            </div>
-            
-            {/* Botões de navegação */}
-            <div className="flex gap-4">
-              <button
-                onClick={prevSlide}
-                className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border-2 bg-white text-primary border-primary hover:bg-primary hover:text-white hover:border-primary shadow-lg"
+
+          {/* Product Slider Mobile */}
+          <div className="md:hidden w-full">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentProduct.id}
+                initial={{ opacity: 0, x: 100 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -100 }}
+                transition={{ duration: 0.5 }}
+                className="bg-gradient-to-br from-secondary to-secondary-dark rounded-2xl shadow-2xl overflow-hidden"
               >
-                <ChevronLeft size={20} />
-              </button>
+                {/* Imagem de fundo mobile */}
+                <div 
+                  className="relative h-64 bg-cover bg-center"
+                  style={{ backgroundImage: `url(${currentProduct.backgroundImage})` }}
+                >
+                  <div className="absolute inset-0 bg-black/40" />
+                  <div className="relative z-10 h-full flex items-center justify-center p-6">
+                    <img 
+                      src={currentProduct.image} 
+                      alt={currentProduct.title}
+                      className="max-h-full max-w-full object-contain"
+                    />
+                  </div>
+                </div>
 
-              <button
-                onClick={nextSlide}
-                className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 border-2 bg-white text-primary border-primary hover:bg-primary hover:text-white hover:border-primary shadow-lg"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
+                {/* Conteúdo mobile */}
+                <div className="p-6 space-y-4">
+                  {/* Título */}
+                  <h3 className="text-3xl font-bold text-white">
+                    {currentProduct.title}
+                  </h3>
+                  
+                  {/* Preço */}
+                  <p className="text-white text-2xl font-bold">
+                    {currentProduct.price}
+                  </p>
+                  
+                  {/* Descrição */}
+                  <p className="text-white/80 text-sm leading-relaxed">
+                    Ferramenta profissional de alta qualidade, ideal para trabalhos que exigem precisão e durabilidade. Produto com garantia e excelente custo-benefício.
+                  </p>
+
+                  {/* Botões mobile */}
+                  <div className="flex flex-col gap-3 pt-4">
+                    <Button 
+                      variant="primary" 
+                      className="w-full py-3 text-sm font-bold tracking-wider shadow-xl inline-flex items-center justify-center"
+                    >
+                      <ShoppingCart size={18} className="mr-2" />
+                      ADICIONAR AO CARRINHO
+                    </Button>
+                    
+                    <button
+                      onClick={() => toggleFavorite(currentProduct.id)}
+                      className="w-full py-3 text-sm font-bold tracking-wider border-2 border-white/30 text-white hover:border-white/50 hover:bg-white/10 transition-all duration-300 rounded-lg inline-flex items-center justify-center"
+                    >
+                      <Heart 
+                        size={18} 
+                        className={`mr-2 transition-all duration-300 ${
+                          favorites[currentProduct.id] 
+                            ? 'fill-white text-white scale-110' 
+                            : 'hover:scale-110'
+                        }`} 
+                      />
+                      ADICIONAR À LISTA
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
           </div>
 
-
-          {/* Product Slider */}
-          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[75%] h-[85%] rounded-3xl shadow-2xl overflow-hidden md:block hidden">
+          {/* Product Slider Desktop */}
+          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-[75%] h-[85%] rounded-3xl shadow-2xl overflow-hidden hidden md:block">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentSlide}
@@ -262,20 +319,6 @@ export const ProductCarouselSection: React.FC = () => {
                 {/* Overlay para melhor contraste */}
                 <div className="absolute inset-0 bg-black/40" />
                 
-                {/* Dots dentro do card */}
-                <div className="absolute top-6 left-1/2 transform -translate-x-1/2 z-50 hidden md:flex gap-2">
-                  {carouselProducts.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentSlide(index)}
-                      className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                        index === currentSlide 
-                          ? 'bg-secondary scale-125' 
-                          : 'bg-white/50 hover:bg-white/80'
-                      }`}
-                    />
-                  ))}
-                </div>
 
                 {/* Conteúdo */}
                 <div className="relative z-10 h-full flex flex-col justify-center pl-64 pr-32">
@@ -283,96 +326,34 @@ export const ProductCarouselSection: React.FC = () => {
                     initial={{ opacity: 0, y: 55 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
+                    className="space-y-6"
                   >
-                    <h3 className="text-white/80 text-sm font-medium mb-2 uppercase tracking-wider">{currentProduct.subtitle}</h3>
-                    <h1 className="text-white text-4xl font-black mb-4 tracking-wider leading-tight drop-shadow-lg">
-                      {currentProduct.title.split(' ').map((word, index) => (
-                        <React.Fragment key={index}>
-                          {word}
-                          {index < currentProduct.title.split(' ').length - 1 && <br />}
-                        </React.Fragment>
-                      ))}
+                    {/* Título */}
+                    <h1 className="text-white text-5xl font-black tracking-wider leading-tight drop-shadow-lg">
+                      {currentProduct.title}
                     </h1>
-                    <div className="text-secondary text-4xl font-bold mb-8 drop-shadow-lg">
+                    
+                    {/* Preço */}
+                    <div className="text-white text-4xl font-bold drop-shadow-lg">
                       {currentProduct.price}
                     </div>
-                  </motion.div>
 
-                  {/* Opções */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 55 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                    className="flex flex-wrap items-start gap-6 mb-8"
-                  >
-                    {currentProduct.options.map((option, optionIndex) => (
-                      <div key={optionIndex} className="min-w-0 flex-shrink-0">
-                        <div className="text-white/70 text-xs font-bold tracking-wider mb-2 uppercase">
-                          {option.title}
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {option.items.map((item, itemIndex) => (
-                            <button
-                              key={itemIndex}
-                              onClick={() => handleOptionChange(`${option.title}-${item.value}`, item.value)}
-                              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300 whitespace-nowrap ${
-                                selectedOptions[`${option.title}-${item.value}`] || item.checked
-                                  ? 'border-2 border-secondary bg-secondary/20 text-secondary'
-                                  : 'border-2 border-transparent text-white/70 hover:text-white'
-                              }`}
-                            >
-                              {item.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                    
-                    <div className="w-px bg-white/30 h-20 mx-4 flex-shrink-0" />
-                    
-                    {/* Círculo de Durabilidade */}
-                    <div className="text-center flex-shrink-0">
-                      <div className="relative w-20 h-20 mb-2">
-                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="47"
-                            stroke="rgba(255,255,255,0.2)"
-                            strokeWidth="4"
-                            fill="none"
-                          />
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="47"
-                            stroke="#fbbf24"
-                            strokeWidth="4"
-                            fill="none"
-                            strokeDasharray={`${(currentProduct.durability * 2.95)}, 295`}
-                            className="transition-all duration-1000 ease-out"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-white text-lg font-bold">{currentProduct.durability}%</span>
-                        </div>
-                      </div>
-                      <div className="text-white/70 text-xs font-bold tracking-wider uppercase">
-                        TAXA DE DURABILIDADE
-                      </div>
-                    </div>
+                    {/* Descrição */}
+                    <p className="text-white/80 text-base leading-relaxed max-w-xl">
+                      Ferramenta profissional de alta qualidade, ideal para trabalhos que exigem precisão e durabilidade. Produto com garantia e excelente custo-benefício.
+                    </p>
                   </motion.div>
 
                   {/* Ações */}
                   <motion.div
                     initial={{ opacity: 0, y: 55 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.6 }}
-                    className="flex flex-wrap items-center gap-6"
+                    transition={{ duration: 0.5, delay: 0.4 }}
+                    className="flex flex-wrap items-center gap-4 mt-8"
                   >
                     <Button 
                       variant="primary" 
-                      className="px-8 py-3 text-sm font-bold tracking-wider shadow-xl hover:shadow-2xl flex-shrink-0 inline-flex items-center"
+                      className="px-8 py-3 text-sm font-bold tracking-wider shadow-xl hover:shadow-2xl inline-flex items-center"
                     >
                       <ShoppingCart size={18} className="mr-2" />
                       ADICIONAR AO CARRINHO
@@ -380,7 +361,7 @@ export const ProductCarouselSection: React.FC = () => {
                     
                     <button
                       onClick={() => toggleFavorite(currentProduct.id)}
-                      className="flex items-center text-white/70 hover:text-secondary transition-colors duration-300 whitespace-nowrap"
+                      className="px-8 py-3 text-sm font-bold tracking-wider border-2 border-white/30 text-white/70 hover:text-white hover:border-white/50 hover:bg-white/10 transition-all duration-300 rounded-lg inline-flex items-center"
                     >
                       <Heart 
                         size={18} 

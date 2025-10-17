@@ -16,7 +16,22 @@ export const HeroSection: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           
           {/* COLUNA ESQUERDA - TEXTO */}
-          <div className="text-left space-y-6">
+          <div className="text-center lg:text-left space-y-6 flex flex-col items-center lg:items-start">
+            
+            {/* Logo Mobile - Aparece apenas no mobile */}
+            <motion.div
+              className="lg:hidden relative w-full max-w-sm mb-6"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.5 }}
+            >
+              <img
+                src="/images/hero/logo.svg"
+                alt="H7TOOLS - Ferramentas Profissionais"
+                className="relative w-full h-auto object-contain"
+              />
+            </motion.div>
+
             {/* Título */}
             <motion.h1
               className="text-4xl md:text-5xl font-bold text-white"
@@ -50,6 +65,7 @@ export const HeroSection: React.FC = () => {
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 1.6 }}
+              className="w-full flex justify-center lg:justify-start"
             >
               <button
                 onClick={() => {
@@ -68,29 +84,29 @@ export const HeroSection: React.FC = () => {
 
             {/* Destaques */}
             <motion.div
-              className="flex flex-wrap gap-6 pt-4"
+              className="flex flex-wrap gap-6 pt-4 justify-center lg:justify-start w-full"
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 1.9 }}
             >
-              <div className="text-white">
+              <div className="text-white text-center">
                 <div className="text-3xl font-bold text-secondary">500+</div>
                 <div className="text-sm opacity-90">Produtos</div>
               </div>
-              <div className="text-white">
+              <div className="text-white text-center">
                 <div className="text-3xl font-bold text-secondary">10+</div>
                 <div className="text-sm opacity-90">Anos</div>
               </div>
-              <div className="text-white">
+              <div className="text-white text-center">
                 <div className="text-3xl font-bold text-secondary">1000+</div>
                 <div className="text-sm opacity-90">Clientes</div>
               </div>
             </motion.div>
           </div>
 
-          {/* COLUNA DIREITA - IMAGEM */}
+          {/* COLUNA DIREITA - IMAGEM (Desktop apenas) */}
           <motion.div
-            className="relative flex items-center justify-center lg:justify-end"
+            className="hidden lg:flex relative items-center justify-center lg:justify-end"
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 1.2 }}
