@@ -16,7 +16,6 @@ export default function LoginPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Lógica de login/cadastro aqui
     console.log('Form submitted:', formData);
   };
 
@@ -30,7 +29,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-background-dark flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* Logo */}
         <div className="text-center mb-8">
           <img 
             src="/images/logo-cinza.png" 
@@ -42,9 +40,7 @@ export default function LoginPage() {
           </h1>
         </div>
 
-        {/* Card */}
         <div className="bg-white rounded-2xl shadow-2xl p-8">
-          {/* Tabs */}
           <div className="flex gap-4 mb-8">
             <button
               onClick={() => setIsLogin(true)}
@@ -68,9 +64,7 @@ export default function LoginPage() {
             </button>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Nome (apenas no cadastro) */}
             {!isLogin && (
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -91,7 +85,6 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Email */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 E-mail
@@ -110,7 +103,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Senha */}
             <div>
               <label className="block text-sm font-semibold text-gray-700 mb-2">
                 Senha
@@ -136,7 +128,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Confirmar Senha (apenas no cadastro) */}
             {!isLogin && (
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -157,7 +148,6 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Esqueceu a senha (apenas no login) */}
             {isLogin && (
               <div className="flex justify-end">
                 <a href="#" className="text-sm text-secondary hover:text-secondary-dark font-semibold">
@@ -166,7 +156,6 @@ export default function LoginPage() {
               </div>
             )}
 
-            {/* Botão Submit */}
             <Button
               type="submit"
               variant="primary"
@@ -177,7 +166,6 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-gray-200"></div>
@@ -187,7 +175,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Social Login */}
           <div className="grid grid-cols-2 gap-4">
             <button className="flex items-center justify-center gap-2 py-3 px-4 border-2 border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -207,7 +194,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Voltar */}
         <div className="text-center mt-6">
           <a href="/" className="text-white hover:text-secondary font-semibold">
             ← Voltar para Home

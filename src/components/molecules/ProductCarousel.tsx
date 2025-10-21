@@ -41,7 +41,6 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
         </div>
       </div>
 
-      {/* Navigation Arrows */}
       <button
         onClick={previous}
         className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white p-2 rounded-full transition-all duration-300"
@@ -57,7 +56,6 @@ export const ProductCarousel: React.FC<ProductCarouselProps> = ({
         <ChevronRight size={24} />
       </button>
 
-      {/* Indicators */}
       <div className="flex justify-center gap-2 mt-4">
         {products.map((_, index) => (
           <button

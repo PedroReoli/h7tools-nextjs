@@ -11,14 +11,11 @@ export const HeroSection: React.FC = () => {
       className="h7tools-hero relative flex items-center justify-center overflow-hidden min-h-screen pt-20 bg-background-dark"
     >
 
-      {/* Layout: Texto à Esquerda + Imagem à Direita */}
       <div className="relative z-40 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           
-          {/* COLUNA ESQUERDA - TEXTO */}
           <div className="text-center lg:text-left space-y-6 flex flex-col items-center lg:items-start">
             
-            {/* Logo Mobile - Aparece apenas no mobile */}
             <motion.div
               className="lg:hidden relative w-full max-w-sm mb-6"
               initial={{ opacity: 0, scale: 0.8 }}
@@ -32,7 +29,6 @@ export const HeroSection: React.FC = () => {
               />
             </motion.div>
 
-            {/* Título */}
             <motion.h1
               className="text-4xl md:text-5xl font-bold text-white"
               initial={{ opacity: 0, x: -50 }}
@@ -46,7 +42,6 @@ export const HeroSection: React.FC = () => {
               <span className="text-secondary">Resultados Profissionais</span>
             </motion.h1>
 
-            {/* Descrição */}
             <motion.p
               className="text-lg md:text-xl text-white/90 leading-relaxed max-w-xl"
               initial={{ opacity: 0, x: -50 }}
@@ -60,18 +55,15 @@ export const HeroSection: React.FC = () => {
               Tudo que você precisa em um só lugar.
             </motion.p>
 
-            {/* CTA Button */}
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 1.6 }}
               className="w-full flex justify-center lg:justify-start"
-            >
-              <button
+              >
+                <button
                 onClick={() => {
-                  // Força ativação da navbar
                   window.dispatchEvent(new Event('forceNavbarActive'));
-                  // Scroll suave para produtos
                   const produtosSection = document.querySelector('#produtos');
                   produtosSection?.scrollIntoView({ behavior: 'smooth' });
                 }}
@@ -82,7 +74,6 @@ export const HeroSection: React.FC = () => {
               </button>
             </motion.div>
 
-            {/* Destaques */}
             <motion.div
               className="flex flex-wrap gap-6 pt-4 justify-center lg:justify-start w-full"
               initial={{ opacity: 0, x: -50 }}
@@ -104,7 +95,6 @@ export const HeroSection: React.FC = () => {
             </motion.div>
           </div>
 
-          {/* COLUNA DIREITA - IMAGEM (Desktop apenas) */}
           <motion.div
             className="hidden lg:flex relative items-center justify-center lg:justify-end"
             initial={{ opacity: 0, scale: 0.8 }}
@@ -112,7 +102,6 @@ export const HeroSection: React.FC = () => {
             transition={{ duration: 1, delay: 1.2 }}
           >
             <div className="relative w-full max-w-xl lg:max-w-2xl">
-              {/* Logo H7TOOLS */}
               <img
                 src="/images/hero/logo.svg"
                 alt="H7TOOLS - Ferramentas Profissionais"
@@ -123,7 +112,6 @@ export const HeroSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Scroll Indicator */}
       <motion.div
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-50"
         animate={{ y: [0, 10, 0] }}

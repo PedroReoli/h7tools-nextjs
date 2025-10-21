@@ -22,14 +22,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
   return (
     <div className="group relative bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 cursor-pointer">
-      {/* Badge de Desconto */}
       {product.discount && (
         <div className="absolute top-4 right-4 z-10 bg-gradient-to-r from-secondary to-yellow-500 text-primary px-4 py-2 text-xs font-bold tracking-wider uppercase rounded-full shadow-lg">
           -{product.discount}% OFF
         </div>
       )}
 
-      {/* Botão Favorito */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -47,7 +45,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         />
       </button>
 
-      {/* Imagem do Produto */}
       <div className="relative h-72 overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
         <Image
           src={product.image}
@@ -58,24 +55,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({
         />
       </div>
 
-      {/* Informações do Produto */}
       <div className="p-6">
-        {/* Categoria */}
         <div className="text-xs font-semibold tracking-wider uppercase text-gray-500 mb-2">
           {product.category || 'Ferramentas'}
         </div>
 
-        {/* Nome do Produto */}
         <h3 className="text-xl font-bold text-primary mb-3 line-clamp-1 tracking-tight">
           {product.name}
         </h3>
 
-        {/* Descrição */}
         <p className="text-sm text-gray-600 line-clamp-2 mb-4 leading-relaxed">
           {product.description}
         </p>
 
-        {/* Features/Tags */}
         {product.features && product.features.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-5">
             {product.features.slice(0, 3).map((feature, index) => (
@@ -89,7 +81,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </div>
         )}
 
-        {/* Preço e Botão */}
         <div className="flex justify-between items-center mb-4">
           <div className="flex flex-col">
             {product.originalPrice && (
@@ -111,7 +102,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </button>
         </div>
 
-        {/* Rating e Estoque */}
         <div className="flex justify-between items-center pt-4 border-t border-gray-100">
           <div className="flex items-center gap-1">
             <Rating rating={product.rating} reviews={product.reviews} size="sm" />

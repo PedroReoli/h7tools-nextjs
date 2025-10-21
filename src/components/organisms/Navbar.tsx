@@ -19,35 +19,30 @@ export const Navbar: React.FC = () => {
   const [isFixedMenuOpen, setIsFixedMenuOpen] = useState(false);
 
   useEffect(() => {
-    // Detectar quando sair da hero section
     const heroSection = document.querySelector('.h7tools-hero');
     
     if (!heroSection) return;
 
-    // Intersection Observer - detecta quando a hero sai da viewport
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          // Se a hero NÃO está visível = mostra navbar fixed
           setShowFixedNavbar(!entry.isIntersecting);
         });
       },
       {
         threshold: 0,
-        rootMargin: '-150px' // Detecta 150px antes da hero sair
+        rootMargin: '-150px'
       }
     );
 
     observer.observe(heroSection);
 
-    // Listener para forçar ativação ao clicar em "Ver Produtos"
     const handleForceNavbar = () => {
       setShowFixedNavbar(true);
     };
 
     window.addEventListener('forceNavbarActive', handleForceNavbar);
 
-    // Cleanup
     return () => {
       observer.disconnect();
       window.removeEventListener('forceNavbarActive', handleForceNavbar);
@@ -65,7 +60,6 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      {/* NAVBAR 1 - TRANSPARENTE (Acompanha scroll até sair da hero) */}
       <nav className="fixed top-0 left-0 right-0 z-[9998] transition-opacity duration-500"
         style={{
           opacity: !showFixedNavbar ? 1 : 0,
@@ -131,7 +125,6 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
         {isTransparentMenuOpen && (
           <div
             className="md:hidden absolute top-20 left-0 right-0 z-[9999]"
@@ -174,7 +167,6 @@ export const Navbar: React.FC = () => {
         )}
       </nav>
 
-      {/* NAVBAR 2 - FIXED BRANCA (Aparece após Hero) */}
       <nav
         className="fixed top-0 left-0 right-0 z-[9998] transition-opacity duration-500"
         style={{
@@ -239,7 +231,6 @@ export const Navbar: React.FC = () => {
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
         {isFixedMenuOpen && (
           <div
             className="md:hidden absolute top-20 left-0 right-0 z-[9999]"

@@ -11,7 +11,6 @@ export const Footer: React.FC = () => {
     <footer className="bg-background-dark text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {/* Logo e Descrição */}
           <div className="lg:col-span-2">
             <div className="flex items-center mb-6">
               <img 
@@ -25,7 +24,6 @@ export const Footer: React.FC = () => {
               Mais de 10 anos de experiência no mercado.
             </Text>
             
-            {/* Redes Sociais */}
             <div className="flex gap-4">
               {[
                 { Icon: Facebook, href: 'https://facebook.com/h7tools/?locale=pt_BR', label: 'Facebook' },
@@ -45,7 +43,6 @@ export const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Links Rápidos */}
           <div>
             <Text variant="h6" color="white" className="mb-6 text-lg font-semibold">
               Links Rápidos
@@ -72,7 +69,6 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Contato */}
           <div>
             <Text variant="h6" color="white" className="mb-6 text-lg font-semibold">
               Contato
@@ -102,7 +98,6 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        {/* Copyright */}
         <div className="border-t border-gray-700 mt-12 pt-8 text-center">
           <Text variant="caption" className="text-gray-400">
             © {currentYear} H7TOOLS - Ferramentas e Acessórios. Todos os direitos reservados.

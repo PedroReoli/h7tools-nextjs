@@ -26,7 +26,6 @@ export const ContactSection: React.FC = () => {
   return (
     <section id="contato" className="py-16 md:py-24 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="text-center mb-16">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -50,7 +49,6 @@ export const ContactSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
-          {/* Cards de Contato */}
           <div className="grid grid-cols-1 gap-6 h-full">
             {contactMethods.map((method, index) => (
               <motion.div
@@ -63,22 +61,18 @@ export const ContactSection: React.FC = () => {
               >
                 <Card className="p-6 text-center hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-secondary/20 h-full flex flex-col justify-center">
                   <div className="flex flex-col items-center space-y-4">
-                    {/* Ícone */}
                     <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center shadow-lg">
                       <method.icon size={24} className="text-primary" />
                     </div>
                     
-                    {/* Título */}
                     <h3 className="text-xl font-bold text-primary">
                       {method.title}
                     </h3>
                     
-                    {/* Descrição */}
                     <p className="text-gray-600 text-sm">
                       {method.description}
                     </p>
                     
-                    {/* Contato */}
                     <p className={`text-lg font-semibold ${method.color}`}>
                       {method.contact}
                     </p>
@@ -88,7 +82,6 @@ export const ContactSection: React.FC = () => {
             ))}
           </div>
 
-          {/* Mapa */}
           <motion.div
             initial={{ opacity: 0, x: 30 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -109,7 +102,6 @@ export const ContactSection: React.FC = () => {
                   className="w-full h-[400px] md:h-[450px]"
                 />
                 
-                {/* Overlay com informações */}
                 <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm rounded-lg p-4 shadow-lg">
                   <h4 className="font-bold text-primary mb-2">H7TOOLS</h4>
                   <p className="text-sm text-gray-600">Ferramentas e Acessórios</p>
