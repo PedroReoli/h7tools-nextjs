@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { Text, Button } from '@/components/atoms';
+import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/utils/cn';
-import { Menu, X, ShoppingCart, User } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, MessageCircle } from 'lucide-react';
+import { useCart } from '@/hooks/useCart';
+import Image from 'next/image';
 
 const navLinks = [
   { label: 'Início', href: '#home' },
@@ -17,10 +18,16 @@ export const Navbar: React.FC = () => {
   const [showFixedNavbar, setShowFixedNavbar] = useState(false);
   const [isTransparentMenuOpen, setIsTransparentMenuOpen] = useState(false);
   const [isFixedMenuOpen, setIsFixedMenuOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+  const transparentCartDesktopRef = useRef<HTMLDivElement>(null);
+  const transparentCartMobileRef = useRef<HTMLDivElement>(null);
+  const fixedCartDesktopRef = useRef<HTMLDivElement>(null);
+  const fixedCartMobileRef = useRef<HTMLDivElement>(null);
+  const { items, totalItems, messageUrl } = useCart();
 
   useEffect(() => {
     const heroSection = document.querySelector('.h7tools-hero');
-    
+
     if (!heroSection) return;
 
     const observer = new IntersectionObserver(
@@ -31,7 +38,7 @@ export const Navbar: React.FC = () => {
       },
       {
         threshold: 0,
-        rootMargin: '-150px'
+        rootMargin: '-150px',
       }
     );
 
@@ -49,6 +56,36 @@ export const Navbar: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const refs = [
+        transparentCartDesktopRef,
+        transparentCartMobileRef,
+        fixedCartDesktopRef,
+        fixedCartMobileRef,
+      ];
+
+      const clickedInside = refs.some((ref) => ref.current?.contains(target));
+
+      if (!clickedInside) {
+        setIsCartOpen(false);
+      }
+    };
+
+    if (isCartOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [isCartOpen]);
+
+  useEffect(() => {
+    setIsCartOpen(false);
+  }, [showFixedNavbar]);
+
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
@@ -58,24 +95,113 @@ export const Navbar: React.FC = () => {
     }
   };
 
+  const CartTrigger = ({
+    mode,
+    containerRef,
+    displayClass,
+  }: {
+    mode: 'light' | 'dark';
+    containerRef: React.RefObject<HTMLDivElement>;
+    displayClass: string;
+  }) => {
+    const buttonClasses =
+      mode === 'dark'
+        ? 'text-white hover:text-secondary'
+        : 'text-primary hover:text-secondary';
+
+    return (
+      <div className={cn('relative', displayClass)} ref={containerRef}>
+        <button
+          onClick={() => setIsCartOpen((prev) => !prev)}
+          className={cn('relative p-2 transition-colors', buttonClasses)}
+          aria-haspopup="true"
+          aria-expanded={isCartOpen}
+        >
+          <ShoppingCart size={24} />
+          <span className="absolute -top-1 -right-1 bg-secondary text-primary text-xs font-bold rounded-full h-5 min-w-[1.25rem] px-1 flex items-center justify-center">
+            {totalItems}
+          </span>
+        </button>
+
+        {isCartOpen && (
+          <div className="absolute right-0 mt-4 w-80 bg-white shadow-2xl rounded-2xl border border-gray-100 z-[10000] p-4">
+            <div className="mb-4">
+              <h4 className="text-lg font-semibold text-primary">Solicitações</h4>
+              <p className="text-xs text-gray-500 mt-1">
+                {items.length === 0
+                  ? 'Nenhum produto selecionado até o momento.'
+                  : 'Confira os produtos adicionados à sua solicitação.'}
+              </p>
+            </div>
+
+            {items.length > 0 && (
+              <div className="space-y-3 max-h-56 overflow-y-auto pr-1">
+                {items.map(({ product, quantity }) => (
+                  <div
+                    key={product.id}
+                    className="flex gap-3 rounded-xl border border-gray-100 p-3 bg-gray-50/80"
+                  >
+                    <div className="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg bg-white">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                        sizes="64px"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1 text-sm text-primary">
+                      <p className="font-semibold leading-snug">
+                        {product.name}
+                      </p>
+                      <p className="text-gray-600 leading-snug text-xs line-clamp-2">
+                        {product.description}
+                      </p>
+                      <span className="text-[11px] font-medium text-secondary">
+                        Quantidade: {quantity}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <a
+              href={items.length === 0 ? undefined : messageUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setIsCartOpen(false)}
+              className={cn(
+                'mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-3 text-sm font-bold text-primary transition-all duration-300 hover:shadow-lg',
+                items.length === 0 && 'pointer-events-none opacity-60'
+              )}
+            >
+              <MessageCircle size={18} />
+              Enviar Solicitação
+            </a>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-[9998] transition-opacity duration-500"
+      <nav
+        className="fixed top-0 left-0 right-0 z-[9998] transition-opacity duration-500"
         style={{
           opacity: !showFixedNavbar ? 1 : 0,
-          pointerEvents: !showFixedNavbar ? 'auto' : 'none'
+          pointerEvents: !showFixedNavbar ? 'auto' : 'none',
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <img 
-              src="/images/logo-cinza.png" 
-              alt="H7TOOLS" 
+            <img
+              src="/images/logo-cinza.png"
+              alt="H7TOOLS"
               className="h-20 w-auto z-[9999]"
             />
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               {navLinks.map((link) => (
                 <button
@@ -88,21 +214,19 @@ export const Navbar: React.FC = () => {
               ))}
             </div>
 
-            {/* Desktop Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              <button className="relative p-2 text-white hover:text-secondary transition-colors">
-                <ShoppingCart size={24} />
-                <span className="absolute -top-1 -right-1 bg-secondary text-primary text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  0
-                </span>
-              </button>
+              <CartTrigger
+                mode="dark"
+                containerRef={transparentCartDesktopRef}
+                displayClass=""
+              />
               <a
                 href="/login"
                 className="p-3 rounded-full hover:scale-105 transition-all flex items-center justify-center"
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.2)',
                   border: '1px solid rgba(255, 255, 255, 0.4)',
-                  backdropFilter: 'blur(8px)'
+                  backdropFilter: 'blur(8px)',
                 }}
                 aria-label="Login"
               >
@@ -110,18 +234,26 @@ export const Navbar: React.FC = () => {
               </a>
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsTransparentMenuOpen(!isTransparentMenuOpen)}
-              className="md:hidden z-[9999] p-2"
-              aria-label="Menu"
-            >
-              {isTransparentMenuOpen ? (
-                <X size={28} color="#ffffff" />
-              ) : (
-                <Menu size={28} color="#ffffff" />
-              )}
-            </button>
+            <div className="md:hidden flex items-center gap-3">
+              <CartTrigger
+                mode="dark"
+                containerRef={transparentCartMobileRef}
+                displayClass=""
+              />
+              <button
+                onClick={() =>
+                  setIsTransparentMenuOpen((prev) => !prev)
+                }
+                className="z-[9999] p-2"
+                aria-label="Menu"
+              >
+                {isTransparentMenuOpen ? (
+                  <X size={28} color="#ffffff" />
+                ) : (
+                  <Menu size={28} color="#ffffff" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -131,7 +263,7 @@ export const Navbar: React.FC = () => {
             style={{
               backgroundColor: 'rgba(0, 0, 0, 0.95)',
               backdropFilter: 'blur(12px)',
-              borderTop: '1px solid rgba(255, 255, 255, 0.2)'
+              borderTop: '1px solid rgba(255, 255, 255, 0.2)',
             }}
           >
             <div className="flex flex-col p-4 gap-3">
@@ -144,10 +276,16 @@ export const Navbar: React.FC = () => {
                   {link.label}
                 </button>
               ))}
-              <button className="w-full flex items-center justify-between px-6 py-3 text-white hover:bg-white/10 rounded-full">
+              <button
+                className="w-full flex items-center justify-between px-6 py-3 text-white hover:bg-white/10 rounded-full"
+                onClick={() => {
+                  setIsCartOpen(true);
+                  setIsTransparentMenuOpen(false);
+                }}
+              >
                 <span>Carrinho</span>
-                <span className="bg-secondary text-primary text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
-                  0
+                <span className="bg-secondary text-primary text-xs font-bold rounded-full h-6 min-w-[1.5rem] px-1 flex items-center justify-center">
+                  {totalItems}
                 </span>
               </button>
               <a
@@ -156,7 +294,7 @@ export const Navbar: React.FC = () => {
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.2)',
                   color: '#ffffff',
-                  border: '1px solid rgba(255, 255, 255, 0.4)'
+                  border: '1px solid rgba(255, 255, 255, 0.4)',
                 }}
               >
                 <User size={18} />
@@ -174,19 +312,17 @@ export const Navbar: React.FC = () => {
           pointerEvents: showFixedNavbar ? 'auto' : 'none',
           backgroundColor: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(12px)',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            {/* Logo */}
-            <img 
-              src="/images/logo-branca.png" 
-              alt="H7TOOLS" 
+            <img
+              src="/images/logo-branca.png"
+              alt="H7TOOLS"
               className="h-20 w-auto z-[9999]"
             />
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-8">
               {navLinks.map((link) => (
                 <button
@@ -199,14 +335,12 @@ export const Navbar: React.FC = () => {
               ))}
             </div>
 
-            {/* Desktop Buttons */}
             <div className="hidden md:flex items-center gap-4">
-              <button className="relative p-2 text-primary hover:text-secondary transition-colors">
-                <ShoppingCart size={24} />
-                <span className="absolute -top-1 -right-1 bg-secondary text-primary text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  0
-                </span>
-              </button>
+              <CartTrigger
+                mode="light"
+                containerRef={fixedCartDesktopRef}
+                displayClass=""
+              />
               <a
                 href="/login"
                 className="p-3 bg-secondary text-primary rounded-full hover:scale-105 transition-all flex items-center justify-center shadow-md hover:shadow-lg"
@@ -216,18 +350,26 @@ export const Navbar: React.FC = () => {
               </a>
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setIsFixedMenuOpen(!isFixedMenuOpen)}
-              className="md:hidden z-[9999] p-2"
-              aria-label="Menu"
-            >
-              {isFixedMenuOpen ? (
-                <X size={28} color="#374151" />
-              ) : (
-                <Menu size={28} color="#374151" />
-              )}
-            </button>
+            <div className="md:hidden flex items-center gap-3">
+              <CartTrigger
+                mode="light"
+                containerRef={fixedCartMobileRef}
+                displayClass=""
+              />
+              <button
+                onClick={() =>
+                  setIsFixedMenuOpen((prev) => !prev)
+                }
+                className="z-[9999] p-2"
+                aria-label="Menu"
+              >
+                {isFixedMenuOpen ? (
+                  <X size={28} color="#374151" />
+                ) : (
+                  <Menu size={28} color="#374151" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -238,7 +380,7 @@ export const Navbar: React.FC = () => {
               backgroundColor: 'rgba(255, 255, 255, 0.98)',
               backdropFilter: 'blur(12px)',
               borderTop: '1px solid rgba(0, 0, 0, 0.1)',
-              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)'
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
             }}
           >
             <div className="flex flex-col p-4 gap-3">
@@ -251,10 +393,16 @@ export const Navbar: React.FC = () => {
                   {link.label}
                 </button>
               ))}
-              <button className="w-full flex items-center justify-between px-6 py-3 text-primary hover:bg-gray-100 rounded-full">
+              <button
+                className="w-full flex items-center justify-between px-6 py-3 text-primary hover:bg-gray-100 rounded-full"
+                onClick={() => {
+                  setIsCartOpen(true);
+                  setIsFixedMenuOpen(false);
+                }}
+              >
                 <span>Carrinho</span>
-                <span className="bg-secondary text-primary text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
-                  0
+                <span className="bg-secondary text-primary text-xs font-bold rounded-full h-6 min-w-[1.5rem] px-1 flex items-center justify-center">
+                  {totalItems}
                 </span>
               </button>
               <a
@@ -272,4 +420,4 @@ export const Navbar: React.FC = () => {
   );
 };
 
-
+// Navbar: navegação principal com controle de carrinho e dropdown de solicitações.

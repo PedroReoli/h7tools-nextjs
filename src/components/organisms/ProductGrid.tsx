@@ -7,13 +7,11 @@ import { Product } from '@/types';
 
 interface ProductGridProps {
   products: Product[];
-  onBuy?: (product: Product) => void;
   onView?: (product: Product) => void;
 }
 
 export const ProductGrid: React.FC<ProductGridProps> = ({
   products,
-  onBuy,
   onView,
 }) => {
   return (
@@ -35,7 +33,6 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
             <ProductCard
               key={product.id}
               product={product}
-              onBuy={onBuy}
               onView={onView}
             />
           ))}
