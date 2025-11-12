@@ -8,6 +8,7 @@ import {
   ProductGrid,
   AboutSection,
   ContactSection,
+  ContactForm,
   Footer,
 } from '@/components/organisms';
 import { Product, Statistic } from '@/types';
@@ -43,6 +44,23 @@ export const LandingPageTemplate: React.FC<LandingPageTemplateProps> = ({
         />
         <AboutSection statistics={statistics} />
         <ContactSection />
+        
+        {/* Formulário de Contato Centralizado */}
+        <section className="py-16 md:py-24 bg-gray-50">
+          <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
+                Fale <span className="text-secondary">Conosco</span>
+              </h2>
+              <p className="text-gray-600 text-lg">
+                Preencha o formulário abaixo e entraremos em contato o mais breve possível
+              </p>
+            </div>
+            <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+              <ContactForm />
+            </div>
+          </div>
+        </section>
       </main>
       <Footer />
       <a

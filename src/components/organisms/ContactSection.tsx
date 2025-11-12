@@ -54,7 +54,7 @@ export const ContactSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
-          <div className="grid grid-cols-1 gap-6 h-full">
+          <div className="grid grid-cols-1 gap-6">
             {contactMethods.map((method, index) => (
               <motion.div
                 key={method.title}
