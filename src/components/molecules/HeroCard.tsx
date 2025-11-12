@@ -22,12 +22,13 @@ export const HeroCard: React.FC<HeroCardProps> = ({ product, onBuy }) => {
 
   return (
     <Card variant="transparent" className="h-full">
-      <div className="relative h-80 overflow-hidden">
+      <div className="relative h-56 w-full overflow-hidden rounded-t-2xl">
         <Image
           src={product.image}
           alt={product.name}
           fill
-          className="object-cover"
+          className="object-cover rounded-t-2xl"
+          sizes="(max-width: 768px) 100vw, 50vw"
         />
       </div>
       
@@ -48,7 +49,7 @@ export const HeroCard: React.FC<HeroCardProps> = ({ product, onBuy }) => {
           className="flex items-center justify-center gap-2"
         >
           <ShoppingCart size={20} />
-          Solicitar
+          Adicionar ao Carrinho
         </Button>
       </div>
     </Card>

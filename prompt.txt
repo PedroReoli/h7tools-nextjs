@@ -3,4 +3,4 @@ TIRAR as estrelas , o em estoque , e as tags dos produtos
 TIRAR CORACAO  
 ALINHAR o botao solicitar ao centro[
     trorcacr texto solicitar por "Adcionar 
-]
+]t

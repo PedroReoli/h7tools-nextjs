@@ -70,6 +70,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       return 'Olá, estava no site de vocês e gostaria de solicitar alguns produtos.';
     }
 
+    // Cada item em uma linha separada usando quebra de linha (\n)
     const productsList = items
       .map(
         (item) =>
@@ -78,9 +79,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       .join('\n');
 
     return (
-      `Olá, estava no site de vocês e queria esses seguintes produtos:\n` +
-      `${productsList}\n` +
-      `O número é (24) 3353-1581.`
+      `Olá, estava no site de vocês e queria esses seguintes produtos:\n\n` +
+      `${productsList}`
     );
   }, [items]);
 

@@ -2,9 +2,14 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { cn } from '@/utils/cn';
-import { Menu, X, ShoppingCart, User, MessageCircle } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, ArrowLeft } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 import Image from 'next/image';
+import { WhatsappIcon } from '@/components/atoms';
+import { useFlyToCart } from '@/contexts/FlyToCartContext';
+import { Icon } from '@iconify/react';
+import Link from 'next/link';
 
 const navLinks = [
   { label: 'Início', href: '#home' },
@@ -14,7 +19,12 @@ const navLinks = [
   { label: 'Contato', href: '#contato' },
 ];
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  forceTransparent?: boolean;
+  variant?: 'default' | 'dark';
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ forceTransparent = false, variant = 'default' }) => {
   const [showFixedNavbar, setShowFixedNavbar] = useState(false);
   const [isTransparentMenuOpen, setIsTransparentMenuOpen] = useState(false);
   const [isFixedMenuOpen, setIsFixedMenuOpen] = useState(false);
@@ -23,9 +33,19 @@ export const Navbar: React.FC = () => {
   const transparentCartMobileRef = useRef<HTMLDivElement>(null);
   const fixedCartDesktopRef = useRef<HTMLDivElement>(null);
   const fixedCartMobileRef = useRef<HTMLDivElement>(null);
+  const transparentCartButtonRef = useRef<HTMLButtonElement>(null);
+  const fixedCartButtonRef = useRef<HTMLButtonElement>(null);
   const { items, totalItems, messageUrl } = useCart();
+  const { setCartRef } = useFlyToCart();
+  const router = useRouter();
 
   useEffect(() => {
+    // Se forceTransparent for true, sempre manter transparente
+    if (forceTransparent) {
+      setShowFixedNavbar(false);
+      return;
+    }
+
     const heroSection = document.querySelector('.h7tools-hero');
 
     if (!heroSection) return;
@@ -54,7 +74,7 @@ export const Navbar: React.FC = () => {
       observer.disconnect();
       window.removeEventListener('forceNavbarActive', handleForceNavbar);
     };
-  }, []);
+  }, [forceTransparent]);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
@@ -86,6 +106,17 @@ export const Navbar: React.FC = () => {
     setIsCartOpen(false);
   }, [showFixedNavbar]);
 
+  // Atualizar ref do carrinho para animação fly to cart
+  useEffect(() => {
+    // Se forceTransparent, sempre usar o botão transparente
+    const currentCartButton = forceTransparent || !showFixedNavbar
+      ? transparentCartButtonRef.current
+      : fixedCartButtonRef.current;
+    if (currentCartButton) {
+      setCartRef(currentCartButton);
+    }
+  }, [showFixedNavbar, forceTransparent, setCartRef]);
+
   const scrollToSection = (href: string) => {
     const element = document.querySelector(href);
     if (element) {
@@ -99,10 +130,12 @@ export const Navbar: React.FC = () => {
     mode,
     containerRef,
     displayClass,
+    buttonRef,
   }: {
     mode: 'light' | 'dark';
     containerRef: React.RefObject<HTMLDivElement>;
     displayClass: string;
+    buttonRef?: React.RefObject<HTMLButtonElement>;
   }) => {
     const buttonClasses =
       mode === 'dark'
@@ -112,6 +145,7 @@ export const Navbar: React.FC = () => {
     return (
       <div className={cn('relative', displayClass)} ref={containerRef}>
         <button
+          ref={buttonRef}
           onClick={() => setIsCartOpen((prev) => !prev)}
           className={cn('relative p-2 transition-colors', buttonClasses)}
           aria-haspopup="true"
@@ -166,41 +200,100 @@ export const Navbar: React.FC = () => {
               </div>
             )}
 
-            <a
-              href={items.length === 0 ? undefined : messageUrl}
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/cart"
               onClick={() => setIsCartOpen(false)}
               className={cn(
                 'mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-3 text-sm font-bold text-primary transition-all duration-300 hover:shadow-lg',
                 items.length === 0 && 'pointer-events-none opacity-60'
               )}
             >
-              <MessageCircle size={18} />
-              Enviar Solicitação
-            </a>
+              <ShoppingCart size={18} />
+              Ver Carrinho
+            </Link>
           </div>
         )}
       </div>
     );
   };
 
+  // Se variant for 'dark', renderizar navbar dark
+  if (variant === 'dark') {
+    return (
+      <nav className="fixed top-0 left-0 right-0 z-[9998] bg-background-dark">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-20">
+            <button
+              onClick={() => router.push('/')}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              <img
+                src="/images/logo-cinza.png"
+                alt="H7TOOLS"
+                className="h-20 w-auto z-[9999]"
+              />
+            </button>
+
+            <div className="hidden md:flex items-center gap-4">
+              <button
+                onClick={() => router.push('/')}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-secondary text-secondary hover:bg-secondary hover:text-background-dark transition-all duration-300 font-medium"
+              >
+                <ArrowLeft size={18} />
+                <span>Voltar para a Loja</span>
+              </button>
+              <a
+                href="/login"
+                className="p-3 rounded-full hover:scale-105 transition-all flex items-center justify-center bg-white/10 hover:bg-secondary hover:text-primary border border-white/20"
+                aria-label="Login"
+              >
+                <User size={20} color="#ffffff" />
+              </a>
+            </div>
+
+            <div className="md:hidden flex items-center gap-3">
+              <button
+                onClick={() => router.push('/')}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border-2 border-secondary text-secondary hover:bg-secondary hover:text-background-dark transition-all duration-300 text-sm font-medium"
+              >
+                <ArrowLeft size={16} />
+                <span>Voltar</span>
+              </button>
+              <a
+                href="/login"
+                className="p-2 rounded-full hover:scale-105 transition-all flex items-center justify-center bg-white/10 hover:bg-secondary hover:text-primary border border-white/20"
+                aria-label="Login"
+              >
+                <User size={20} color="#ffffff" />
+              </a>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <>
       <nav
         className="fixed top-0 left-0 right-0 z-[9998] transition-opacity duration-500"
         style={{
-          opacity: !showFixedNavbar ? 1 : 0,
-          pointerEvents: !showFixedNavbar ? 'auto' : 'none',
+          opacity: forceTransparent || !showFixedNavbar ? 1 : 0,
+          pointerEvents: forceTransparent || !showFixedNavbar ? 'auto' : 'none',
         }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            <img
-              src="/images/logo-cinza.png"
-              alt="H7TOOLS"
-              className="h-20 w-auto z-[9999]"
-            />
+            <button
+              onClick={() => router.push('/')}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              <img
+                src="/images/logo-cinza.png"
+                alt="H7TOOLS"
+                className="h-20 w-auto z-[9999]"
+              />
+            </button>
 
             <div className="hidden md:flex items-center space-x-8">
               {navLinks.map((link) => (
@@ -219,6 +312,7 @@ export const Navbar: React.FC = () => {
                 mode="dark"
                 containerRef={transparentCartDesktopRef}
                 displayClass=""
+                buttonRef={transparentCartButtonRef}
               />
               <a
                 href="/login"
@@ -239,6 +333,7 @@ export const Navbar: React.FC = () => {
                 mode="dark"
                 containerRef={transparentCartMobileRef}
                 displayClass=""
+                buttonRef={transparentCartButtonRef}
               />
               <button
                 onClick={() =>
@@ -308,8 +403,8 @@ export const Navbar: React.FC = () => {
       <nav
         className="fixed top-0 left-0 right-0 z-[9998] transition-opacity duration-500"
         style={{
-          opacity: showFixedNavbar ? 1 : 0,
-          pointerEvents: showFixedNavbar ? 'auto' : 'none',
+          opacity: !forceTransparent && showFixedNavbar ? 1 : 0,
+          pointerEvents: !forceTransparent && showFixedNavbar ? 'auto' : 'none',
           backgroundColor: 'rgba(255, 255, 255, 0.95)',
           backdropFilter: 'blur(12px)',
           boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
@@ -317,11 +412,16 @@ export const Navbar: React.FC = () => {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-20">
-            <img
-              src="/images/logo-branca.png"
-              alt="H7TOOLS"
-              className="h-20 w-auto z-[9999]"
-            />
+            <button
+              onClick={() => router.push('/')}
+              className="cursor-pointer hover:opacity-80 transition-opacity"
+            >
+              <img
+                src="/images/logo-branca.png"
+                alt="H7TOOLS"
+                className="h-20 w-auto z-[9999]"
+              />
+            </button>
 
             <div className="hidden md:flex items-center space-x-8">
               {navLinks.map((link) => (
@@ -340,6 +440,7 @@ export const Navbar: React.FC = () => {
                 mode="light"
                 containerRef={fixedCartDesktopRef}
                 displayClass=""
+                buttonRef={fixedCartButtonRef}
               />
               <a
                 href="/login"
@@ -355,6 +456,7 @@ export const Navbar: React.FC = () => {
                 mode="light"
                 containerRef={fixedCartMobileRef}
                 displayClass=""
+                buttonRef={fixedCartButtonRef}
               />
               <button
                 onClick={() =>

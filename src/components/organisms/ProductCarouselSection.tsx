@@ -2,127 +2,81 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/atoms';
+import { useCart } from '@/hooks/useCart';
+import { useFlyToCart } from '@/contexts/FlyToCartContext';
+import { Product } from '@/types';
 
 interface CarouselProduct {
   id: string;
   title: string;
-  subtitle: string;
-  price: string;
+  description: string;
   image: string;
   backgroundImage: string;
-  target: string;
-  options: {
-    title: string;
-    items: { label: string; value: string; checked?: boolean }[];
-  }[];
-  durability: number;
-  isFavorite?: boolean;
+  product: Product;
 }
 
 const carouselProducts: CarouselProduct[] = [
   {
     id: '1',
-    title: 'PARAFUSADEIRA',
-    subtitle: 'Produtos em Destaque',
-    price: 'R$ 1.299,99',
-    image: '/images/products/compressor.png',
-    backgroundImage: '/images/products/compressor.png',
-    target: 'img1',
-    options: [
-      {
-        title: 'TAMANHO',
-        items: [
-          { label: 'S', value: 's' },
-          { label: 'M', value: 'm', checked: true },
-          { label: 'L', value: 'l' },
-          { label: 'XL', value: 'xl' }
-        ]
-      }
-    ],
-    durability: 80
+    title: 'Gerador de Energia Pro 5000W',
+    description: 'Potência confiável para alimentar equipamentos em obras e eventos.',
+    image: '/images/products/Gerador.jpeg',
+    backgroundImage: '/images/products/Gerador.jpeg',
+    product: {
+      id: 'prod-1',
+      name: 'Gerador de Energia Pro 5000W',
+      description: 'Potência confiável para alimentar equipamentos em obras e eventos.',
+      price: 3499.9,
+      image: '/images/products/Gerador.jpeg',
+      rating: 4.9,
+      reviews: 112,
+      category: 'Equipamentos',
+    },
   },
   {
     id: '2',
-    title: 'COMPRESSOR',
-    subtitle: 'Oferta Especial',
-    price: 'R$ 140,00',
-    image: '/images/products/compressor.png',
-    backgroundImage: '/images/products/compressor.png',
-    target: 'img2',
-    options: [
-      {
-        title: 'UNIDADE DE MOTOR',
-        items: [
-          { label: 'P-S4 TWIN', value: 'ps4', checked: true },
-          { label: 'P-W401', value: 'pw401' }
-        ]
-      }
-    ],
-    durability: 75
+    title: 'Parafusadeira Multiuso Professional',
+    description: 'Corpo compacto com empunhadura emborrachada para trabalhos delicados.',
+    image: '/images/products/Carrinhodemao01.jpeg',
+    backgroundImage: '/images/products/Carrinhodemao01.jpeg',
+    product: {
+      id: 'prod-7',
+      name: 'Parafusadeira Multiuso Professional',
+      description: 'Corpo compacto com empunhadura emborrachada para trabalhos delicados.',
+      price: 389.9,
+      image: '/images/products/Carrinhodemao01.jpeg',
+      rating: 4.4,
+      reviews: 83,
+      category: 'Ferramentas Elétricas',
+    },
   },
   {
     id: '3',
-    title: 'FURAÇÃO',
-    subtitle: 'Ferramentas Profissionais',
-    price: 'R$ 1.699,99',
-    image: '/images/products/compressor.png',
-    backgroundImage: '/images/products/compressor.png',
-    target: 'img3',
-    options: [
-      {
-        title: 'FAIXA DE VOLTAGEM',
-        items: [
-          { label: '2000 WATT', value: '2000w', checked: true },
-          { label: '2800 WATT', value: '2800w' }
-        ]
-      },
-      {
-        title: 'TAMANHO DA BROCA',
-        items: [
-          { label: 'S', value: 's' },
-          { label: 'M', value: 'm', checked: true },
-          { label: 'L', value: 'l' },
-          { label: 'XL', value: 'xl' }
-        ]
-      }
-    ],
-    durability: 80
+    title: 'Parafusadeira Bosch GSR 1000 Smart',
+    description: 'Carregamento rápido por micro USB e formato ergonômico para uso prolongado.',
+    image: '/images/products/Parafusadeira%20bosh.jpeg',
+    backgroundImage: '/images/products/Parafusadeira%20bosh.jpeg',
+    product: {
+      id: 'prod-4',
+      name: 'Parafusadeira Bosch GSR 1000 Smart',
+      description: 'Carregamento rápido por micro USB e formato ergonômico para uso prolongado.',
+      price: 649.9,
+      image: '/images/products/Parafusadeira%20bosh.jpeg',
+      rating: 4.6,
+      reviews: 162,
+      category: 'Ferramentas Elétricas',
+    },
   },
-  {
-    id: '4',
-    title: 'FERRAMENTA ELÉTRICA',
-    subtitle: 'Qualidade Premium',
-    price: 'R$ 9.999,99',
-    image: '/images/products/compressor.png',
-    backgroundImage: '/images/products/compressor.png',
-    target: 'img4',
-    options: [
-      {
-        title: 'CLASSIFICAÇÃO',
-        items: [
-          { label: 'CLASSE 4', value: 'class4', checked: true },
-          { label: 'CLASSE 20', value: 'class20' }
-        ]
-      },
-      {
-        title: 'ARMAMENTO',
-        items: [
-          { label: 'SUPERLASER', value: 'super', checked: true },
-          { label: 'TURBOLASER', value: 'turbo' }
-        ]
-      }
-    ],
-    durability: 80
-  }
 ];
 
 export const ProductCarouselSection: React.FC = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [selectedOptions, setSelectedOptions] = useState<{ [key: string]: string }>({});
-  const [favorites, setFavorites] = useState<{ [key: string]: boolean }>({});
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const { addItem } = useCart();
+  const { triggerAnimation } = useFlyToCart();
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const nextSlide = () => {
     setCurrentSlide((prev) => (prev + 1) % carouselProducts.length);
@@ -148,18 +102,13 @@ export const ProductCarouselSection: React.FC = () => {
     return () => stopAutoPlay();
   }, []);
 
-  const toggleFavorite = (productId: string) => {
-    setFavorites((prev) => ({
-      ...prev,
-      [productId]: !prev[productId]
-    }));
-  };
-
-  const handleOptionChange = (optionName: string, value: string) => {
-    setSelectedOptions((prev) => ({
-      ...prev,
-      [optionName]: value
-    }));
+  const handleAddToCart = (product: Product, index: number) => {
+    const button = buttonRefs.current[index];
+    if (button) {
+      // Passa null para cartRef, deixando o contexto usar o ref interno
+      triggerAnimation(button, null, product.image, product.name);
+    }
+    addItem(product);
   };
 
   const currentProduct = carouselProducts[currentSlide];
@@ -218,7 +167,7 @@ export const ProductCarouselSection: React.FC = () => {
                 <img
                   src={product.image}
                   alt={product.title}
-                  className="max-h-[500px] w-auto object-contain"
+                  className="max-h-[350px] w-[350px] h-[350px] object-cover rounded-2xl"
                 />
               </motion.div>
             ))}
@@ -248,7 +197,7 @@ export const ProductCarouselSection: React.FC = () => {
                     <img 
                       src={currentProduct.image} 
                       alt={currentProduct.title}
-                      className="max-h-full max-w-full object-contain"
+                      className="w-full h-48 object-cover rounded-xl"
                     />
                   </div>
                 </div>
@@ -260,40 +209,24 @@ export const ProductCarouselSection: React.FC = () => {
                     {currentProduct.title}
                   </h3>
                   
-                  {/* Preço */}
-                  <p className="text-white text-2xl font-bold">
-                    {currentProduct.price}
-                  </p>
-                  
                   {/* Descrição */}
                   <p className="text-white/80 text-sm leading-relaxed">
-                    Ferramenta profissional de alta qualidade, ideal para trabalhos que exigem precisão e durabilidade. Produto com garantia e excelente custo-benefício.
+                    {currentProduct.description}
                   </p>
 
-                  {/* Botões mobile */}
+                  {/* Botão mobile */}
                   <div className="flex flex-col gap-3 pt-4">
                     <Button 
                       variant="primary" 
                       className="w-full py-3 text-sm font-bold tracking-wider shadow-xl inline-flex items-center justify-center"
+                      onClick={() => handleAddToCart(currentProduct.product, currentSlide)}
+                      ref={(el) => {
+                        if (el) buttonRefs.current[currentSlide] = el;
+                      }}
                     >
                       <ShoppingCart size={18} className="mr-2" />
                       ADICIONAR AO CARRINHO
                     </Button>
-                    
-                    <button
-                      onClick={() => toggleFavorite(currentProduct.id)}
-                      className="w-full py-3 text-sm font-bold tracking-wider border-2 border-white/30 text-white hover:border-white/50 hover:bg-white/10 transition-all duration-300 rounded-lg inline-flex items-center justify-center"
-                    >
-                      <Heart 
-                        size={18} 
-                        className={`mr-2 transition-all duration-300 ${
-                          favorites[currentProduct.id] 
-                            ? 'fill-white text-white scale-110' 
-                            : 'hover:scale-110'
-                        }`} 
-                      />
-                      ADICIONAR À LISTA
-                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -332,15 +265,10 @@ export const ProductCarouselSection: React.FC = () => {
                     <h1 className="text-white text-5xl font-black tracking-wider leading-tight drop-shadow-lg">
                       {currentProduct.title}
                     </h1>
-                    
-                    {/* Preço */}
-                    <div className="text-white text-4xl font-bold drop-shadow-lg">
-                      {currentProduct.price}
-                    </div>
 
                     {/* Descrição */}
                     <p className="text-white/80 text-base leading-relaxed max-w-xl">
-                      Ferramenta profissional de alta qualidade, ideal para trabalhos que exigem precisão e durabilidade. Produto com garantia e excelente custo-benefício.
+                      {currentProduct.description}
                     </p>
                   </motion.div>
 
@@ -354,25 +282,14 @@ export const ProductCarouselSection: React.FC = () => {
                     <Button 
                       variant="primary" 
                       className="px-8 py-3 text-sm font-bold tracking-wider shadow-xl hover:shadow-2xl inline-flex items-center"
+                      onClick={() => handleAddToCart(currentProduct.product, currentSlide)}
+                      ref={(el) => {
+                        if (el) buttonRefs.current[currentSlide] = el;
+                      }}
                     >
                       <ShoppingCart size={18} className="mr-2" />
                       ADICIONAR AO CARRINHO
                     </Button>
-                    
-                    <button
-                      onClick={() => toggleFavorite(currentProduct.id)}
-                      className="px-8 py-3 text-sm font-bold tracking-wider border-2 border-white/30 text-white/70 hover:text-white hover:border-white/50 hover:bg-white/10 transition-all duration-300 rounded-lg inline-flex items-center"
-                    >
-                      <Heart 
-                        size={18} 
-                        className={`mr-2 transition-all duration-300 ${
-                          favorites[currentProduct.id] 
-                            ? 'fill-secondary text-secondary scale-110' 
-                            : 'hover:scale-110'
-                        }`} 
-                      />
-                      ADICIONAR À LISTA
-                    </button>
                   </motion.div>
                 </div>
               </motion.div>
@@ -391,11 +308,11 @@ export const ProductCarouselSection: React.FC = () => {
                 className="bg-white rounded-2xl shadow-xl overflow-hidden border"
               >
                 {/* Product Image */}
-                <div className="relative h-64 bg-gray-100">
+                <div className="relative h-48 w-full bg-gray-100 rounded-t-2xl overflow-hidden">
                   <img
                     src={currentProduct.image}
                     alt={currentProduct.title}
-                    className="w-full h-full object-contain p-4"
+                    className="w-full h-full object-cover rounded-t-2xl"
                   />
                   <div 
                     className="absolute inset-0 bg-cover bg-center opacity-10"
@@ -405,100 +322,27 @@ export const ProductCarouselSection: React.FC = () => {
 
                 {/* Conteúdo do Produto */}
                 <div className="p-6">
-                  <h3 className="text-primary/70 text-sm font-medium mb-2 uppercase tracking-wider">
-                    {currentProduct.subtitle}
-                  </h3>
                   <h1 className="text-primary text-2xl font-bold mb-4 leading-tight">
                     {currentProduct.title}
                   </h1>
-                  <div className="text-secondary text-3xl font-bold mb-6">
-                    {currentProduct.price}
-                  </div>
-
-                  {/* Opções */}
-                  <div className="space-y-4 mb-6">
-                    {currentProduct.options.map((option, optionIndex) => (
-                      <div key={optionIndex}>
-                        <div className="text-primary/70 text-xs font-bold tracking-wider mb-2 uppercase">
-                          {option.title}
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {option.items.map((item, itemIndex) => (
-                            <button
-                              key={itemIndex}
-                              onClick={() => handleOptionChange(`${option.title}-${item.value}`, item.value)}
-                              className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300 border whitespace-nowrap ${
-                                selectedOptions[`${option.title}-${item.value}`] || item.checked
-                                  ? 'border-secondary bg-secondary/20 text-secondary'
-                                  : 'border-gray-300 text-gray-600 hover:border-primary hover:text-primary'
-                              }`}
-                            >
-                              {item.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Durabilidade */}
-                  <div className="flex items-center justify-center mb-6">
-                    <div className="text-center">
-                      <div className="relative w-16 h-16 mb-2">
-                        <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="47"
-                            stroke="rgba(0,0,0,0.1)"
-                            strokeWidth="4"
-                            fill="none"
-                          />
-                          <circle
-                            cx="50"
-                            cy="50"
-                            r="47"
-                            stroke="#fbbf24"
-                            strokeWidth="4"
-                            fill="none"
-                            strokeDasharray={`${(currentProduct.durability * 2.95)}, 295`}
-                            className="transition-all duration-1000 ease-out"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-primary text-sm font-bold">{currentProduct.durability}%</span>
-                        </div>
-                      </div>
-                      <div className="text-primary/70 text-xs font-bold tracking-wider uppercase">
-                        DURABILIDADE
-                      </div>
-                    </div>
-                  </div>
+                  
+                  <p className="text-gray-600 text-sm mb-6 leading-relaxed">
+                    {currentProduct.description}
+                  </p>
 
                   {/* Ações */}
                   <div className="space-y-3">
                     <Button 
                       variant="primary" 
                       className="w-full py-3 text-sm font-bold tracking-wider inline-flex items-center justify-center"
+                      onClick={() => handleAddToCart(currentProduct.product, currentSlide)}
+                      ref={(el) => {
+                        if (el) buttonRefs.current[currentSlide] = el;
+                      }}
                     >
                       <ShoppingCart size={18} className="mr-2" />
                       ADICIONAR AO CARRINHO
                     </Button>
-                    
-                    <button
-                      onClick={() => toggleFavorite(currentProduct.id)}
-                      className="w-full flex items-center justify-center text-gray-600 hover:text-secondary transition-colors duration-300 py-2"
-                    >
-                      <Heart 
-                        size={18} 
-                        className={`mr-2 transition-all duration-300 ${
-                          favorites[currentProduct.id] 
-                            ? 'fill-secondary text-secondary scale-110' 
-                            : 'hover:scale-110'
-                        }`} 
-                      />
-                      ADICIONAR À LISTA
-                    </button>
                   </div>
                 </div>
               </motion.div>
@@ -509,3 +353,5 @@ export const ProductCarouselSection: React.FC = () => {
     </section>
   );
 };
+
+

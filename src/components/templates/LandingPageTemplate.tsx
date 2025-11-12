@@ -11,7 +11,10 @@ import {
   Footer,
 } from '@/components/organisms';
 import { Product, Statistic } from '@/types';
-import { MessageCircle } from 'lucide-react';
+import { Icon } from '@iconify/react';
+import { getWhatsAppComercialUrl } from '@/utils/whatsapp';
+import { FlyToCartAnimation } from '@/components/molecules/FlyToCartAnimation';
+import { useFlyToCart } from '@/contexts/FlyToCartContext';
 
 interface LandingPageTemplateProps {
   gridProducts: Product[];
@@ -22,6 +25,7 @@ export const LandingPageTemplate: React.FC<LandingPageTemplateProps> = ({
   gridProducts,
   statistics,
 }) => {
+  const { animationState } = useFlyToCart();
   const handleView = (product: Product) => {
     console.log('Ver:', product);
     // Implementar lógica de visualização
@@ -42,14 +46,25 @@ export const LandingPageTemplate: React.FC<LandingPageTemplateProps> = ({
       </main>
       <Footer />
       <a
-        href="https://wa.me/552433531581?text=Ol%C3%A1%2C%20estava%20no%20site%20de%20voc%C3%AAs%20e%20estou%20entrando%20em%20contato."
+        href={getWhatsAppComercialUrl()}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-[9999] inline-flex h-14 w-14 items-center justify-center rounded-full bg-green-500 text-white shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl"
+        className="fixed bottom-6 right-6 z-[9999] inline-flex h-16 w-16 items-center justify-center rounded-full bg-green-500 shadow-xl transition-transform duration-300 hover:scale-105 hover:shadow-2xl"
         aria-label="Contato via WhatsApp"
       >
-        <MessageCircle size={28} />
+        <Icon icon="ic:baseline-whatsapp" width={32} height={32} color="#ffffff" />
       </a>
+      {animationState && (
+        <FlyToCartAnimation
+          startX={animationState.startX}
+          startY={animationState.startY}
+          endX={animationState.endX}
+          endY={animationState.endY}
+          productImage={animationState.productImage}
+          productName={animationState.productName}
+          onComplete={() => {}}
+        />
+      )}
     </div>
   );
 };

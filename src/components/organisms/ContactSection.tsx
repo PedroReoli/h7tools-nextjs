@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Phone, Mail } from 'lucide-react';
 import { Card } from '@/components/atoms';
+import { getWhatsAppComercialUrl } from '@/utils/whatsapp';
 
 const contactMethods = [
   {
@@ -11,14 +12,18 @@ const contactMethods = [
     title: 'Telefone',
     description: 'Entre em contato conosco',
     contact: '(24) 3353-1581',
-    color: 'text-secondary'
+    color: 'text-secondary',
+    href: getWhatsAppComercialUrl('Olá, estava no site de vocês e gostaria de entrar em contato.'),
+    isClickable: true
   },
   {
     icon: Mail,
     title: 'E-mail',
     description: 'Envie sua mensagem',
     contact: 'contato@h7tools.com',
-    color: 'text-secondary'
+    color: 'text-secondary',
+    href: 'mailto:contato@h7tools.com',
+    isClickable: true
   }
 ];
 
@@ -59,25 +64,54 @@ export const ContactSection: React.FC = () => {
                 viewport={{ once: true }}
                 className="flex-1"
               >
-                <Card className="p-6 text-center hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-secondary/20 h-full flex flex-col justify-center">
-                  <div className="flex flex-col items-center space-y-4">
-                    <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center shadow-lg">
-                      <method.icon size={24} className="text-primary" />
+                {method.isClickable ? (
+                  <a
+                    href={method.href}
+                    target={method.href?.startsWith('http') ? '_blank' : undefined}
+                    rel={method.href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+                    className="block"
+                  >
+                    <Card className="p-6 text-center hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-secondary/20 h-full flex flex-col justify-center cursor-pointer">
+                      <div className="flex flex-col items-center space-y-4">
+                        <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center shadow-lg">
+                          <method.icon size={24} className="text-primary" />
+                        </div>
+                        
+                        <h3 className="text-xl font-bold text-primary">
+                          {method.title}
+                        </h3>
+                        
+                        <p className="text-gray-600 text-sm">
+                          {method.description}
+                        </p>
+                        
+                        <p className={`text-lg font-semibold ${method.color}`}>
+                          {method.contact}
+                        </p>
+                      </div>
+                    </Card>
+                  </a>
+                ) : (
+                  <Card className="p-6 text-center hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-secondary/20 h-full flex flex-col justify-center">
+                    <div className="flex flex-col items-center space-y-4">
+                      <div className="w-16 h-16 bg-secondary rounded-full flex items-center justify-center shadow-lg">
+                        <method.icon size={24} className="text-primary" />
+                      </div>
+                      
+                      <h3 className="text-xl font-bold text-primary">
+                        {method.title}
+                      </h3>
+                      
+                      <p className="text-gray-600 text-sm">
+                        {method.description}
+                      </p>
+                      
+                      <p className={`text-lg font-semibold ${method.color}`}>
+                        {method.contact}
+                      </p>
                     </div>
-                    
-                    <h3 className="text-xl font-bold text-primary">
-                      {method.title}
-                    </h3>
-                    
-                    <p className="text-gray-600 text-sm">
-                      {method.description}
-                    </p>
-                    
-                    <p className={`text-lg font-semibold ${method.color}`}>
-                      {method.contact}
-                    </p>
-                  </div>
-                </Card>
+                  </Card>
+                )}
               </motion.div>
             ))}
           </div>
